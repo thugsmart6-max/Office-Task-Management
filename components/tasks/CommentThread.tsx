@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { formatDateTime } from "@/lib/utils";
 
 type CommentRow = {
-  _id: string;
+  _id: unknown;
   body: string;
   createdAt: string | Date;
-  authorId?: { name?: string; role?: string } | string;
+  authorId?: unknown;
 };
 
 export function CommentThread({
@@ -51,11 +51,15 @@ export function CommentThread({
       {comments.length ? (
         <ul className="mt-8">
           {comments.map((c) => {
+            const authorDoc =
+              c.authorId && typeof c.authorId === "object"
+                ? (c.authorId as { name?: string; role?: string })
+                : null;
             const author =
-              typeof c.authorId === "string" ? c.authorId : c.authorId?.name || "Teammate";
-            const role = typeof c.authorId === "object" ? c.authorId?.role : undefined;
+              typeof c.authorId === "string" ? c.authorId : authorDoc?.name || "Teammate";
+            const role = authorDoc?.role;
             return (
-              <li key={c._id} className="border-b border-line py-6 first:border-t">
+              <li key={String(c._id)} className="border-b border-line py-6 first:border-t">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
                   {author}
                   {role ? ` · ${role}` : ""}

@@ -96,10 +96,10 @@ export async function listTasks(
 
   const page = Math.max(1, Number(query.page || 1));
   const limit = Math.min(100, Math.max(1, Number(query.limit || 50)));
-  const sort =
+  const sort: Record<string, 1 | -1> =
     query.status === "done"
-      ? { completedAt: -1 as const, updatedAt: -1 as const }
-      : { deadline: 1 as const };
+      ? { completedAt: -1, updatedAt: -1 }
+      : { deadline: 1 };
 
   const [items, total] = await Promise.all([
     Task.find(filter)
